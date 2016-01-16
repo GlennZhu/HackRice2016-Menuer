@@ -9,7 +9,7 @@ import UIKit
 
 //---------------------------------------------------------------------------------------------------------
 
-func rectFromStartAndEnd(var startPoint:CGPoint, endPoint: CGPoint) -> CGRect
+func rectFromStartAndEnd( startPoint:CGPoint, endPoint: CGPoint) -> CGRect
 {
   var  top, left, bottom, right: CGFloat;
   top = min(startPoint.y, endPoint.y)
@@ -54,7 +54,7 @@ class CroppableImageView: UIView, CornerpointClientProtocol
     {
       if let realCropRect = newValue
       {
-        var newRect:CGRect =  CGRectIntersection(realCropRect, imageRect!)
+        let newRect:CGRect =  CGRectIntersection(realCropRect, imageRect!)
         internalCropRect = newRect
         cornerpoints[0].centerPoint = newRect.origin
         cornerpoints[1].centerPoint = CGPointMake(CGRectGetMaxX(newRect), newRect.origin.y)
@@ -92,7 +92,7 @@ class CroppableImageView: UIView, CornerpointClientProtocol
 
    required init(coder aDecoder: NSCoder)
   {
-    for i in 1...4
+    for _ in 1...4
     {
       let aCornerpointView = CornerpointView()
        cornerpoints.append(aCornerpointView)
@@ -208,12 +208,12 @@ class CroppableImageView: UIView, CornerpointClientProtocol
       path.fill()
 
       imageToCrop?.drawInRect(imageRect!)
-      var result = UIGraphicsGetImageFromCurrentImageContext()
+      let result = UIGraphicsGetImageFromCurrentImageContext()
       
       UIGraphicsEndImageContext();
       
-      var theImageRef = result!.CGImage
-      viewForImage.layer.contents = theImageRef as! AnyObject
+      let theImageRef = result!.CGImage
+      viewForImage.layer.contents = theImageRef as? AnyObject
     }
   }
   
@@ -259,7 +259,7 @@ class CroppableImageView: UIView, CornerpointClientProtocol
       
       UIGraphicsBeginImageContextWithOptions(cropRect.size, true, 1)
       imageToCrop?.drawInRect(drawRect)
-      var result = UIGraphicsGetImageFromCurrentImageContext()
+      let result = UIGraphicsGetImageFromCurrentImageContext()
       UIGraphicsEndImageContext();
       
       return result
@@ -359,7 +359,7 @@ class CroppableImageView: UIView, CornerpointClientProtocol
     }
 
     //Find the index of the opposite corner.
-    var otherIndex:Int = (pointIndex! + 2) % 4
+    let otherIndex:Int = (pointIndex! + 2) % 4
     
     //Calculate a new cropRect using those 2 corners
     cropRect = rectFromStartAndEnd(newCornerPoint.centerPoint!, endPoint: cornerpoints[otherIndex].centerPoint!)
