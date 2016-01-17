@@ -18,6 +18,7 @@
 		AE788CD91AC1B60200A32E20 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AE788CD71AC1B60200A32E20 /* Main.storyboard */; };
 		AE788CDE1AC1B60200A32E20 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = AE788CDC1AC1B60200A32E20 /* LaunchScreen.xib */; };
 		AE98DA721AC30F0A008E7DFE /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE98DA711AC30F0A008E7DFE /* AVFoundation.framework */; };
+		E6DD5C911C4B27FA002AE717 /* SwiftyJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6DD5C901C4B27FA002AE717 /* SwiftyJson.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +46,7 @@
 		AE788CDD1AC1B60200A32E20 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		AE788CE31AC1B60200A32E20 /* CropImgTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CropImgTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE98DA711AC30F0A008E7DFE /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		E6DD5C901C4B27FA002AE717 /* SwiftyJson.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJson.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +96,7 @@
 				AE755FC91AC5A85A00EFD3D4 /* ViewController.swift */,
 				AE755FCA1AC5A85A00EFD3D4 /* AppDelegate.swift */,
 				AE755FCC1AC5A85A00EFD3D4 /* CroppableImageView.swift */,
+				E6DD5C901C4B27FA002AE717 /* SwiftyJson.swift */,
 				AE788CD71AC1B60200A32E20 /* Main.storyboard */,
 				AE788CDC1AC1B60200A32E20 /* LaunchScreen.xib */,
 				AE788CD11AC1B60200A32E20 /* Supporting Files */,
@@ -215,6 +218,7 @@
 				AE755FD21AC5A85A00EFD3D4 /* AppDelegate.swift in Sources */,
 				AE755FD41AC5A85A00EFD3D4 /* CroppableImageView.swift in Sources */,
 				AE755FD11AC5A85A00EFD3D4 /* ViewController.swift in Sources */,
+				E6DD5C911C4B27FA002AE717 /* SwiftyJson.swift in Sources */,
 				AE755FCF1AC5A85A00EFD3D4 /* CroppableImageViewDelegateProtocol.swift in Sources */,
 				AE755FD01AC5A85A00EFD3D4 /* Utils.swift in Sources */,
 				AE755FD31AC5A85A00EFD3D4 /* CornerpointClientProtocol.swift in Sources */,

@@ -24,87 +24,56 @@ override func viewDidLoad()
 {
     super.viewDidLoad()
     // Do any additional setup after loading the view, typically from a nib.
-  }
+}
 
-  override func didReceiveMemoryWarning() {
+override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
-  }
+}
 
-  enum ImageSource: Int
-  {
+enum ImageSource: Int {
     case Camera = 1
     case PhotoLibrary
-  }
+}
   
-  func pickImageFromSource(
+func pickImageFromSource(
     theImageSource: ImageSource,
-    fromButton: UIButton)
-  {
+    fromButton: UIButton) {
+        
     let imagePicker = UIImagePickerController()
     imagePicker.delegate = self
-    switch theImageSource
-    {
+        
+    switch theImageSource {
     case .Camera:
-      print("User chose take new pic button")
-      imagePicker.sourceType = UIImagePickerControllerSourceType.Camera
-      imagePicker.cameraDevice = UIImagePickerControllerCameraDevice.Rear;
+        print("User chose take new pic button")
+        imagePicker.sourceType = UIImagePickerControllerSourceType.Camera
+        imagePicker.cameraDevice = UIImagePickerControllerCameraDevice.Rear;
     case .PhotoLibrary:
-      print("User chose select pic button")
-      imagePicker.sourceType = UIImagePickerControllerSourceType.SavedPhotosAlbum
+        print("User chose select pic button")
+        imagePicker.sourceType = UIImagePickerControllerSourceType.SavedPhotosAlbum
     }
+        
     if UIDevice.currentDevice().userInterfaceIdiom == .Pad
     {
-      if theImageSource == ImageSource.Camera
-      {
-      self.presentViewController(
-        imagePicker,
-        animated: true)
-        {
-          //println("In image picker completion block")
+        if theImageSource == ImageSource.Camera {
+            self.presentViewController(
+                imagePicker,
+                animated: true) {}
+        } else {
+                self.presentViewController(imagePicker, animated: true) {}
         }
-      }
-      else
-      {
-        self.presentViewController(
-          imagePicker,
-          animated: true)
-          {
-            //println("In image picker completion block")
-        }
-//        //Import from library on iPad
-//        let pickPhotoPopover = UIPopoverController.init(contentViewController: imagePicker)
-//        //pickPhotoPopover.delegate = self
-//        let buttonRect = fromButton.convertRect(
-//          fromButton.bounds,
-//          toView: self.view.window?.rootViewController?.view)
-//        imagePicker.delegate = self;
-//        pickPhotoPopover.presentPopoverFromRect(
-//          buttonRect,
-//          inView: self.view,
-//          permittedArrowDirections: UIPopoverArrowDirection.Any,
-//          animated: true)
-//        
-      }
-    }
-    else
-    {
-      self.presentViewController(
-        imagePicker,
-        animated: true)
-        {
+    } else {
+        self.presentViewController(imagePicker, animated: true) {
           print("In image picker completion block")
-      }
-      
+        }
     }
-  }
+}
   
   //-------------------------------------------------------------------------------------------------------
   // MARK: - IBAction methods -
   //-------------------------------------------------------------------------------------------------------
 
-  @IBAction func handleSelectImgButton(sender: UIButton)
-  {
+@IBAction func handleSelectImgButton(sender: UIButton) {
     /*See if the current device has a camera. (I don't think any device that runs iOS 8 lacks a camera,
     But the simulator doesn't offer a camera, so this prevents the
     "Take a new picture" button from crashing the simulator.
@@ -116,18 +85,6 @@ override func viewDidLoad()
     let anActionSheet = UIAlertController(title: "Pick Image Source",
       message: nil,
       preferredStyle: UIAlertControllerStyle.ActionSheet)
-    
-    
-//    //Offer the option to re-load the starting sample image
-//    let sampleAction = UIAlertAction(
-//      title:"Load Sample Image",
-//      style: UIAlertActionStyle.Default,
-//      handler:
-//      {
-//        (alert: UIAlertAction!)  in
-//        self.cropView.imageToCrop = UIImage(named: "Scampers 6685")
-//      }
-//    )
     
     //If the current device has a camera, add a "Take a New Picture" button
     var takePicAction: UIAlertAction? = nil
@@ -185,19 +142,108 @@ override func viewDidLoad()
       {
         //println("In action sheet completion block")
     }
-  }
+}
   
-  @IBAction func handleCropButton(sender: UIButton)
-  {
-    if let croppedImage = cropView.croppedImage()
-    {
-      self.whiteView.hidden = false
-      delay(0)
-        {
-          UIImageWriteToSavedPhotosAlbum(croppedImage, nil, nil, nil);
-          
-          delay(0.2)
-            {
+
+func sendFile(
+        urlPath:String,
+        fileName:String,
+        data:NSData,
+        completionHandler: (NSURLResponse?, NSData?, NSError?) -> Void){
+            let url: NSURL = NSURL(string: urlPath)!
+            let request1: NSMutableURLRequest = NSMutableURLRequest(URL: url)
+            
+            request1.HTTPMethod = "POST"
+            
+            let boundary = "1234567890"
+            let fullData = photoDataToFormData(data,boundary:boundary,fileName:fileName)
+            
+            request1.setValue("multipart/form-data; boundary=" + boundary,
+                forHTTPHeaderField: "Content-Type")
+            
+            // REQUIRED!
+            request1.setValue(String(fullData.length), forHTTPHeaderField: "Content-Length")
+            
+            request1.HTTPBody = fullData
+            request1.HTTPShouldHandleCookies = false
+            
+            let queue:NSOperationQueue = NSOperationQueue()
+            
+            NSURLConnection.sendAsynchronousRequest(
+                request1,
+                queue: queue,
+                completionHandler:completionHandler)
+}
+    
+// this is a very verbose version of that function
+// you can shorten it, but i left it as-is for clarity
+// and as an example
+func photoDataToFormData(data:NSData,boundary:String,fileName:String) -> NSData {
+        let fullData = NSMutableData()
+        
+        // 1 - Boundary should start with --
+        let lineOne = "--" + boundary + "\r\n"
+        fullData.appendData(lineOne.dataUsingEncoding(
+            NSUTF8StringEncoding,
+            allowLossyConversion: false)!)
+        
+        // 2
+        let lineTwo = "Content-Disposition: form-data; name=\"image\"; filename=\"" + fileName + "\"\r\n"
+        NSLog(lineTwo)
+        fullData.appendData(lineTwo.dataUsingEncoding(
+            NSUTF8StringEncoding,
+            allowLossyConversion: false)!)
+        
+        // 3
+        let lineThree = "Content-Type: image/jpg\r\n\r\n"
+        fullData.appendData(lineThree.dataUsingEncoding(
+            NSUTF8StringEncoding,
+            allowLossyConversion: false)!)
+        
+        // 4
+        fullData.appendData(data)
+        
+        // 5
+        let lineFive = "\r\n"
+        fullData.appendData(lineFive.dataUsingEncoding(
+            NSUTF8StringEncoding,
+            allowLossyConversion: false)!)
+        
+        // 6 - The end. Notice -- at the start and at the end
+        let lineSix = "--" + boundary + "--\r\n"
+        fullData.appendData(lineSix.dataUsingEncoding(
+            NSUTF8StringEncoding,
+            allowLossyConversion: false)!)
+        
+        return fullData
+}
+
+@IBAction func handleCropButton(sender: UIButton) {
+    if let croppedImage = cropView.croppedImage() {
+        self.whiteView.hidden = false
+        delay(0) {
+            let imageData = UIImagePNGRepresentation(croppedImage)
+            
+            if let data = imageData {
+                let url = Utils.serverUrl + "image"
+                
+                self.sendFile(url,
+                    fileName: "dish.jpg",
+                    data: data,
+                    completionHandler: {
+                        (response: NSURLResponse?, resultData: NSData?, error: NSError?) -> Void in
+
+                        self.fetchImage("http://3dprint.com/wp-content/uploads/2015/11/China-Flag.png")
+
+//                        let json:JSON = JSON(NSData)
+//                        if let result = json["ImageURL"].string {
+//                            self.fetchImage(result)
+//                        }
+
+                    }
+                )
+            }
+          delay(0.2) {
               self.whiteView.hidden = true
           }
       }
@@ -222,6 +268,56 @@ override func viewDidLoad()
       */
     }
   }
+    
+    
+    private func fetchImage(urlInput : String) {
+        let qos = QOS_CLASS_USER_INITIATED
+        
+        dispatch_async(dispatch_get_global_queue(qos, 0), { () -> Void in
+            if let url = NSURL(string: urlInput), data = NSData(contentsOfURL: url) {
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.cropView.imageToCrop = UIImage(data: data)
+                })
+            }
+        })
+
+        
+        
+
+        
+//        var imageView: UIImageView
+//        imageView = UIImageView(frame:CGRectMake(10, 50, 100, 300))
+//        imageView.image = NSURL(string: urlInput).flatMap{NSData(contentsOfURL: $0)}.flatMap{UIImage(data: $0)}
+//        self.whiteView.addSubview(imageView)
+        
+//        let url = NSURL(fileURLWithPath: urlInput)
+//            let qos = QOS_CLASS_USER_INITIATED
+//            dispatch_async(dispatch_get_global_queue(qos, 0)) { () -> Void in
+//                print("ri1 \(url.absoluteURL) \n");
+//                let imageData = NSData(contentsOfURL: url.absoluteURL) // this blocks the thread it is on
+//                dispatch_async(dispatch_get_main_queue()) {
+//                    // only do something with this image
+//                    // if the url we fetched is the current imageURL we want
+//                    // (that might have changed while we were off fetching this one)
+//                        print("ri2 \n");
+//                        if imageData != nil {
+//                            // this might be a waste of time if our MVC is out of action now
+//                            // which it might be if someone hit the Back button
+//                            // or otherwise removed us from split view or navigation controller
+//                            // while we were off fetching the image
+//                            print("ri dui \n");
+//                            var imageView: UIImageView
+//                            imageView = UIImageView(frame:CGRectMake(10, 50, 100, 300))
+//                            imageView.image = UIImage(data: imageData!)
+//                            self.whiteView.addSubview(imageView)
+//                        } else {
+//                            print("ri  bu dui\n");
+//                            self.whiteView = nil
+//                        }
+//                    print("ri 3\n");
+//                }
+//            }
+    }
 
   //-------------------------------------------------------------------------------------------------------
   // MARK: - CroppableImageViewDelegateProtocol methods -
@@ -266,7 +362,7 @@ override func viewDidLoad()
 //    //cropView.setNeedsLayout()
 //  }
   
-  func imagePickerControllerDidCancel(picker: UIImagePickerController)
+func imagePickerControllerDidCancel(picker: UIImagePickerController)
   {
     print("In \(__FUNCTION__)")
     picker.dismissViewControllerAnimated(true, completion: nil)

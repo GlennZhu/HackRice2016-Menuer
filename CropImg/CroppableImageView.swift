@@ -31,7 +31,7 @@ class CroppableImageView: UIView, CornerpointClientProtocol
     didSet
     {
       imageSize = imageToCrop?.size
-      self.setNeedsLayout()
+      self.setNeedsLayout()        
     }
   }
 

@@ -17,3 +17,7 @@ func delay(delay: Double, block:()->())
   
   dispatch_after(nSecDispatchTime, queue, block)
 }
+
+class Utils {
+    static let serverUrl = "https://7fb43fca.ngrok.io/"
+}
