@@ -19,6 +19,7 @@ class ViewController:
   @IBOutlet weak var whiteView: UIView!
   @IBOutlet weak var cropButton: UIButton!
   @IBOutlet weak var cropView: CroppableImageView!
+   var readFoodUrl : String?
   
 override func viewDidLoad()
 {
@@ -173,6 +174,7 @@ func sendFile(
                 request1,
                 queue: queue,
                 completionHandler:completionHandler)
+            print("sendFile end")
 }
     
 // this is a very verbose version of that function
@@ -233,11 +235,23 @@ func photoDataToFormData(data:NSData,boundary:String,fileName:String) -> NSData 
                     completionHandler: {
                         (response: NSURLResponse?, resultData: NSData?, error: NSError?) -> Void in
 
-                        self.fetchImage("http://3dprint.com/wp-content/uploads/2015/11/China-Flag.png")
-
-//                        let json:JSON = JSON(NSData)
-//                        if let result = json["ImageURL"].string {
+                        do {
+                            let lala = try NSJSONSerialization.JSONObjectWithData(resultData!, options: []) as? [String:AnyObject]
+                            if let imageURL = lala!["imageUrl"] as! String? {
+                                self.readFoodUrl = imageURL
+                                print(self.readFoodUrl!)
+                                self.performSegueWithIdentifier("ShowFoodSegue", sender: self)
+                            }
+                        } catch let error as NSError {
+                            print(error)
+                        }
+                        
+//                        let json:JSON = JSON(resultData!)
+//                        if let result = json["imageUrl"].string {
 //                            self.fetchImage(result)
+//                            print(result)
+//                        } else {
+//                            print("no good")
 //                        }
 
                     }
@@ -247,25 +261,8 @@ func photoDataToFormData(data:NSData,boundary:String,fileName:String) -> NSData 
               self.whiteView.hidden = true
           }
       }
-      
-      
-      //The code below saves the cropped image to a file in the user's documents directory.
-      /*------------------------
-      let jpegData = UIImageJPEGRepresentation(croppedImage, 0.9)
-      let documentsPath:String = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory,
-      NSSearchPathDomainMask.UserDomainMask,
-      true).last as String
-      let filename = "croppedImage.jpg"
-      var filePath = documentsPath.stringByAppendingPathComponent(filename)
-      if (jpegData.writeToFile(filePath, atomically: true))
-      {
-      println("Saved image to path \(filePath)")
-      }
-      else
-      {
-      println("Error saving file")
-      }
-      */
+        
+//        self.performSegueWithIdentifier("foodImage", sender: nil)
     }
   }
     
@@ -281,42 +278,6 @@ func photoDataToFormData(data:NSData,boundary:String,fileName:String) -> NSData 
             }
         })
 
-        
-        
-
-        
-//        var imageView: UIImageView
-//        imageView = UIImageView(frame:CGRectMake(10, 50, 100, 300))
-//        imageView.image = NSURL(string: urlInput).flatMap{NSData(contentsOfURL: $0)}.flatMap{UIImage(data: $0)}
-//        self.whiteView.addSubview(imageView)
-        
-//        let url = NSURL(fileURLWithPath: urlInput)
-//            let qos = QOS_CLASS_USER_INITIATED
-//            dispatch_async(dispatch_get_global_queue(qos, 0)) { () -> Void in
-//                print("ri1 \(url.absoluteURL) \n");
-//                let imageData = NSData(contentsOfURL: url.absoluteURL) // this blocks the thread it is on
-//                dispatch_async(dispatch_get_main_queue()) {
-//                    // only do something with this image
-//                    // if the url we fetched is the current imageURL we want
-//                    // (that might have changed while we were off fetching this one)
-//                        print("ri2 \n");
-//                        if imageData != nil {
-//                            // this might be a waste of time if our MVC is out of action now
-//                            // which it might be if someone hit the Back button
-//                            // or otherwise removed us from split view or navigation controller
-//                            // while we were off fetching the image
-//                            print("ri dui \n");
-//                            var imageView: UIImageView
-//                            imageView = UIImageView(frame:CGRectMake(10, 50, 100, 300))
-//                            imageView.image = UIImage(data: imageData!)
-//                            self.whiteView.addSubview(imageView)
-//                        } else {
-//                            print("ri  bu dui\n");
-//                            self.whiteView = nil
-//                        }
-//                    print("ri 3\n");
-//                }
-//            }
     }
 
   //-------------------------------------------------------------------------------------------------------
@@ -362,10 +323,37 @@ func photoDataToFormData(data:NSData,boundary:String,fileName:String) -> NSData 
 //    //cropView.setNeedsLayout()
 //  }
   
-func imagePickerControllerDidCancel(picker: UIImagePickerController)
-  {
-    print("In \(__FUNCTION__)")
-    picker.dismissViewControllerAnimated(true, completion: nil)
-  }
+    func imagePickerControllerDidCancel(picker: UIImagePickerController)
+    {
+        print("In \(__FUNCTION__)")
+        picker.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    private struct StoryBoard {
+        static let foodImageSegue = "FoodImageSegue"
+    }
+    
+    // MARK: - Navigation
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        delay(8.0) {
+        let destination = (segue.destinationViewController as? UINavigationController)?.visibleViewController
+        if let foodImageViewController = destination as? FoodImageViewController {
+            if let identifier = segue.identifier {
+                switch(identifier) {
+                case StoryBoard.foodImageSegue: break
+                    foodImageViewController.foodImageText = self.readFoodUrl!
+                    
+                    
+                default:
+                    break
+                }
+            }
+        }
+        }
+    }
+    
+    @IBAction func unwindSegue(segue: UIStoryboardSegue) {
+        print("unwindSegue")
+    }
 }
-

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="14F1509" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="14F1509" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="O9C-12-mWr">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
@@ -17,14 +17,14 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Kvb-6K-ReN" customClass="CroppableImageView" customModule="CropImg" customModuleProvider="target">
+                            <view opaque="NO" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Kvb-6K-ReN" customClass="CroppableImageView" customModule="CropImg" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="20" width="600" height="530"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <connections>
                                     <outlet property="cropDelegate" destination="BYZ-38-t0r" id="rN3-7W-ahK"/>
                                 </connections>
                             </view>
-                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4O5-NP-wuW" userLabel="whiteView">
+                            <view hidden="YES" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4O5-NP-wuW" userLabel="whiteView">
                                 <rect key="frame" x="0.0" y="20" width="600" height="530"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             </view>
@@ -89,15 +89,93 @@
                             </mask>
                         </variation>
                     </view>
+                    <navigationItem key="navigationItem" id="ImX-Wk-DSv"/>
                     <connections>
                         <outlet property="cropButton" destination="WYN-zp-Orb" id="kSh-6N-vn3"/>
                         <outlet property="cropView" destination="Kvb-6K-ReN" id="PWP-QI-nbn"/>
                         <outlet property="whiteView" destination="4O5-NP-wuW" id="oRd-KL-rmC"/>
+                        <segue destination="Xia-3s-1G1" kind="show" identifier="ShowFoodSegue" id="4kA-w2-cbt"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="990" y="373"/>
+        </scene>
+        <!--Food Image View Controller-->
+        <scene sceneID="zIJ-Cw-Af1">
+            <objects>
+                <viewController id="65c-HM-yUf" customClass="FoodImageViewController" customModule="CropImg" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="cd9-aT-8gY"/>
+                        <viewControllerLayoutGuide type="bottom" id="WJG-jo-5ff"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="3UI-RT-78w">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NdU-fj-ccF">
+                                <rect key="frame" x="0.0" y="64" width="600" height="536"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="7bZ-UU-Mdt">
+                        <barButtonItem key="leftBarButtonItem" style="plain" id="FBC-4Q-aHM">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="yu6-HV-PhZ">
+                                <rect key="frame" x="20" y="7" width="133" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Back"/>
+                            </button>
+                            <connections>
+                                <action selector="goBackBtn:" destination="65c-HM-yUf" id="3YW-bs-4Ot"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="foodImage" destination="NdU-fj-ccF" id="oXg-HK-9Pj"/>
+                        <segue destination="cpP-6k-Up7" kind="unwind" identifier="UnwindSegue" unwindAction="unwindSegue:" id="mdH-cq-qRV"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="pzv-ks-D99" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="cpP-6k-Up7" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="1010" y="1152"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="ayI-aI-3nm">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ccz-nO-gDc" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="O9C-12-mWr" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="8D8-rZ-qvl">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="6mU-Ym-TT0"/>
+                    </connections>
+                </navigationController>
+            </objects>
             <point key="canvasLocation" x="192" y="373"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="H0k-bQ-97w">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Xia-3s-1G1" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="vzL-qp-L8m">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="65c-HM-yUf" kind="relationship" relationship="rootViewController" id="PlJ-Ac-Rb4"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dgB-Fs-1tk" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="192" y="1152"/>
         </scene>
     </scenes>
 </document>
