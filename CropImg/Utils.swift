@@ -19,5 +19,5 @@ func delay(delay: Double, block:()->())
 }
 
 class Utils {
-    static let serverUrl = "https://253a54f2.ngrok.io/"
+    static let serverUrl = ""
 }
