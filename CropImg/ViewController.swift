@@ -19,8 +19,10 @@ class ViewController:
   @IBOutlet weak var whiteView: UIView!
   @IBOutlet weak var cropButton: UIButton!
   @IBOutlet weak var cropView: CroppableImageView!
-   var readFoodUrl : String?
+    @IBOutlet weak var testView: UIImageView!
   
+    var scroll: UIScrollView?
+    
 override func viewDidLoad()
 {
     super.viewDidLoad()
@@ -75,6 +77,7 @@ func pickImageFromSource(
   //-------------------------------------------------------------------------------------------------------
 
 @IBAction func handleSelectImgButton(sender: UIButton) {
+    self.testView.hidden = true
     /*See if the current device has a camera. (I don't think any device that runs iOS 8 lacks a camera,
     But the simulator doesn't offer a camera, so this prevents the
     "Take a new picture" button from crashing the simulator.
@@ -126,7 +129,6 @@ func pickImageFromSource(
         print("User chose cancel button")
       }
     )
-//    anActionSheet.addAction(sampleAction)
     
     if let requiredtakePicAction = takePicAction
     {
@@ -139,8 +141,7 @@ func pickImageFromSource(
     popover?.sourceView = sender
     popover?.sourceRect = sender.bounds;
     
-    self.presentViewController(anActionSheet, animated: true)
-      {
+    self.presentViewController(anActionSheet, animated: true) {
         //println("In action sheet completion block")
     }
 }
@@ -222,11 +223,11 @@ func photoDataToFormData(data:NSData,boundary:String,fileName:String) -> NSData 
 
 @IBAction func handleCropButton(sender: UIButton) {
     if let croppedImage = cropView.croppedImage() {
-        self.whiteView.hidden = false
         delay(0) {
             let imageData = UIImagePNGRepresentation(croppedImage)
             
             if let data = imageData {
+                print("got image data")
                 let url = Utils.serverUrl + "image"
                 
                 self.sendFile(url,
@@ -234,38 +235,45 @@ func photoDataToFormData(data:NSData,boundary:String,fileName:String) -> NSData 
                     data: data,
                     completionHandler: {
                         (response: NSURLResponse?, resultData: NSData?, error: NSError?) -> Void in
-
+                        print("start completion handler")
                         do {
-                            let lala = try NSJSONSerialization.JSONObjectWithData(resultData!, options: []) as? [String:AnyObject]
-                            if let imageURL = lala!["imageUrl"] as! String? {
-                                self.readFoodUrl = imageURL
-                                print(self.readFoodUrl!)
-                                self.performSegueWithIdentifier("ShowFoodSegue", sender: self)
+                            let postRequestResponseJson = try NSJSONSerialization.JSONObjectWithData(resultData!, options: []) as? [String:AnyObject]
+                            print("\(response)")
+                            print("\(postRequestResponseJson)")
+                            
+                            if let imageURL = postRequestResponseJson?["imageUrl"] as? String? {
+                                self.fetchImage(imageURL!)
+                                
+//                                self.readFoodUrl = imageURL
+//                                print(self.readFoodUrl)
                             }
                         } catch let error as NSError {
                             print(error)
                         }
-                        
-//                        let json:JSON = JSON(resultData!)
-//                        if let result = json["imageUrl"].string {
-//                            self.fetchImage(result)
-//                            print(result)
-//                        } else {
-//                            print("no good")
-//                        }
-
+                        print("finish completion handler")
                     }
                 )
             }
           delay(0.2) {
               self.whiteView.hidden = true
+                self.testView.hidden = false
           }
       }
-        
-//        self.performSegueWithIdentifier("foodImage", sender: nil)
     }
   }
     
+    private func scaleUIImageToSize(let image: UIImage, let size: CGSize) -> UIImage {
+        let hasAlpha = false
+        let scale: CGFloat = 0.0 // Automatically use scale factor of main screen
+        
+        UIGraphicsBeginImageContextWithOptions(size, !hasAlpha, scale)
+        image.drawInRect(CGRect(origin: CGPointZero, size: size))
+        
+        let scaledImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return scaledImage
+    }
     
     private func fetchImage(urlInput : String) {
         let qos = QOS_CLASS_USER_INITIATED
@@ -273,11 +281,16 @@ func photoDataToFormData(data:NSData,boundary:String,fileName:String) -> NSData 
         dispatch_async(dispatch_get_global_queue(qos, 0), { () -> Void in
             if let url = NSURL(string: urlInput), data = NSData(contentsOfURL: url) {
                 dispatch_async(dispatch_get_main_queue(), {
-                    self.cropView.imageToCrop = UIImage(data: data)
+                    self.testView.hidden = false
+//                    self.testView.image = self.scaleUIImageToSize(UIImage(data: data)!, size: self.testView.bounds.size)
+                    self.testView.image = UIImage(data: data)
+                    self.testView.contentMode = .ScaleAspectFit
+                    self.testView.clipsToBounds = true
+                    
+                    self.cropView.contentMode = .ScaleAspectFit
                 })
             }
         })
-
     }
 
   //-------------------------------------------------------------------------------------------------------
@@ -286,8 +299,7 @@ func photoDataToFormData(data:NSData,boundary:String,fileName:String) -> NSData 
 
   func haveValidCropRect(haveValidCropRect:Bool)
   {
-    //println("In haveValidCropRect. Value = \(haveValidCropRect)")
-    cropButton.enabled = haveValidCropRect
+        cropButton.enabled = haveValidCropRect
   }
   //-------------------------------------------------------------------------------------------------------
   // MARK: - UIImagePickerControllerDelegate methods -
@@ -299,61 +311,10 @@ func photoDataToFormData(data:NSData,boundary:String,fileName:String) -> NSData 
             picker.dismissViewControllerAnimated(true, completion: nil)
         }
     }
-    
-//    func imagePickerController(picker: UIImagePickerController, didFinishPickingImage image: UIImage, editingInfo: [String : AnyObject]?) {
-//        print("In \(__FUNCTION__)")
-//        if let image = editingInfo![UIImagePickerControllerOriginalImage] as? UIImage
-//        {
-//            picker.dismissViewControllerAnimated(true, completion: nil)
-//            cropView.imageToCrop = image
-//        }
-//        //cropView.setNeedsLayout()
-//    }
-    
-//  func imagePickerController(
-//    picker: UIImagePickerController,
-//    didFinishPickingMediaWithInfo info: [NSObject : AnyObject])
-//  {
-//    print("In \(__FUNCTION__)")
-//    if let image = info[UIImagePickerControllerOriginalImage] as? UIImage
-//    {
-//      picker.dismissViewControllerAnimated(true, completion: nil)
-//      cropView.imageToCrop = image
-//    }
-//    //cropView.setNeedsLayout()
-//  }
   
     func imagePickerControllerDidCancel(picker: UIImagePickerController)
     {
         print("In \(__FUNCTION__)")
         picker.dismissViewControllerAnimated(true, completion: nil)
-    }
-    
-    private struct StoryBoard {
-        static let foodImageSegue = "FoodImageSegue"
-    }
-    
-    // MARK: - Navigation
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        delay(8.0) {
-        let destination = (segue.destinationViewController as? UINavigationController)?.visibleViewController
-        if let foodImageViewController = destination as? FoodImageViewController {
-            if let identifier = segue.identifier {
-                switch(identifier) {
-                case StoryBoard.foodImageSegue: break
-                    foodImageViewController.foodImageText = self.readFoodUrl!
-                    
-                    
-                default:
-                    break
-                }
-            }
-        }
-        }
-    }
-    
-    @IBAction func unwindSegue(segue: UIStoryboardSegue) {
-        print("unwindSegue")
     }
 }
